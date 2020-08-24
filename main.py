@@ -7,7 +7,7 @@ import argparse
 import numpy as np
 
 from torch.utils import data
-from datasets import VOCSegmentation, Cityscapes
+from datasets import VOCSegmentation, Cityscapes, get_custom_dataset
 from utils import ext_transforms as et
 from metrics import StreamSegMetrics
 
@@ -26,13 +26,18 @@ def get_argparser():
     # Datset Options
     parser.add_argument("--data_root", type=str, default='./datasets/data',
                         help="path to Dataset")
-    parser.add_argument("--dataset", type=str, default='voc',
-                        choices=['voc', 'cityscapes'], help='Name of dataset')
+    parser.add_argument("--dataset", type=str, default='other',
+                        choices=['voc', 'cityscapes', 'other'], help='Name of dataset')
     parser.add_argument("--num_classes", type=int, default=None,
                         help="num classes (default: None)")
+    parser.add_argument("--img_size", type=int, default=256, help="Size of the images")
+    parser.add_argument("--train_image", type=str, required=True, help="Path to the train images")
+    parser.add_argument("--val_image", type=str, required=True, help="Path to the val image")
+    parser.add_argument("--train_label", type=str, required=True, help="Path to the train label")
+    parser.add_argument("--val_label", type=str, required=True, help="Path to the val label")
 
     # Deeplab Options
-    parser.add_argument("--model", type=str, default='deeplabv3plus_mobilenet',
+    parser.add_argument("--model", type=str, default='deeplabv3plus_resnet101',
                         choices=['deeplabv3_resnet50',  'deeplabv3plus_resnet50',
                                  'deeplabv3_resnet101', 'deeplabv3plus_resnet101',
                                  'deeplabv3_mobilenet', 'deeplabv3plus_mobilenet'], help='model name')
@@ -148,7 +153,15 @@ def get_dataset(opts):
                                split='train', transform=train_transform)
         val_dst = Cityscapes(root=opts.data_root,
                              split='val', transform=val_transform)
+    #return train_dst, val_dst
+
+    if opts.dataset == 'other':
+        
+        train_dst, val_dst = get_custom_dataset(opts)
+
     return train_dst, val_dst
+
+
 
 
 def validate(opts, model, loader, device, metrics, ret_samples_ids=None):
@@ -165,6 +178,8 @@ def validate(opts, model, loader, device, metrics, ret_samples_ids=None):
     with torch.no_grad():
         for i, (images, labels) in tqdm(enumerate(loader)):
             
+            plt.imshow(labels, cmap='jet'); plt.show()
+            exit(0)          
             images = images.to(device, dtype=torch.float32)
             labels = labels.to(device, dtype=torch.long)
 
