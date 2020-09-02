@@ -25,7 +25,14 @@ class LoadDataset(data.Dataset):
         image = Image.open(self.image_paths[index])
 
         label_tensor = self.label_transform(label).squeeze(0)
+        label_tensor = label_tensor * 255.0
         image_tensor = self.img_transform(image)
+                 
+        '''       
+        nc, h, w = label_tensor.size()
+        input_label = self.FloatTensor(nc, h, w).zero_()
+        semantic_label = input_label.scatter_(1, label_tensor, 1.0)
+        '''
         
         data = {'label':label_tensor, 'image':image_tensor}
 

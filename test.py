@@ -31,10 +31,10 @@ def get_argparser():
     parser.add_argument("--num_classes", type=int, default=None,
                         help="num classes (default: None)")
     parser.add_argument("--img_size", type=int, default=256, help="Size of the images")
-    parser.add_argument("--train_image", type=str, required=True, help="Path to the train images")
-    parser.add_argument("--val_image", type=str, required=True, help="Path to the val image")
-    parser.add_argument("--train_label", type=str, required=True, help="Path to the train label")
-    parser.add_argument("--val_label", type=str, required=True, help="Path to the val label")
+    parser.add_argument("--test_image", type=str, required=True, help="Path to the test images")
+    #parser.add_argument("--val_image", type=str, required=True, help="Path to the val image")
+    parser.add_argument("--test_label", type=str, required=True, help="Path to the test label")
+    #parser.add_argument("--val_label", type=str, required=True, help="Path to the val label")
 
     # Deeplab Options
     parser.add_argument("--model", type=str, default='deeplabv3plus_resnet101',
